@@ -390,43 +390,6 @@ curl http://localhost:3000/api/demo-status
 
 ## Production Deployment
 
-### Vercel
-
-1. **Add environment variables** in Vercel dashboard:
-   ```
-   DEMO_MODE=true
-   DEMO_USER_EMAIL=demo@yasp.io
-   DEMO_USER_PASSWORD=demo123
-   DEMO_RESET_INTERVAL_MINUTES=60
-   ```
-
-2. **Deploy a Vercel Cron Job** for resets:
-   
-   Create `vercel.json`:
-   ```json
-   {
-     "crons": [{
-       "path": "/api/cron/demo-reset",
-       "schedule": "0 * * * *"
-     }]
-   }
-   ```
-
-3. **Create the cron endpoint** at `src/app/api/cron/demo-reset/route.ts`:
-   ```typescript
-   import { NextResponse } from 'next/server'
-   import { seedDemoData } from '@/scripts/seed-demo-data'
-   
-   export async function GET(request: Request) {
-     const authHeader = request.headers.get('authorization')
-     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-     }
-     
-     await seedDemoData()
-     return NextResponse.json({ success: true })
-   }
-   ```
 
 ### Docker
 
@@ -599,57 +562,7 @@ For public-facing demos:
 - ✅ Monitor resource usage and costs
 - ✅ Set reasonable reset intervals (30-60 minutes)
 
-**Recommended:**
-- 🔒 Implement rate limiting on API endpoints
-- 🔒 Add CAPTCHA to subscription forms
-- 🔒 Monitor for abuse patterns
-- 🔒 Set up alerts for unusual activity
 
-**Example rate limiting:**
-```typescript
-// src/middleware.ts
-import { rateLimit } from '@/lib/rate-limit'
-
-export async function middleware(request: Request) {
-  if (process.env.DEMO_MODE === 'true') {
-    const ip = request.headers.get('x-forwarded-for') || 'unknown'
-    const limited = await rateLimit(ip)
-    
-    if (limited) {
-      return new Response('Too many requests', { status: 429 })
-    }
-  }
-}
-```
-
-### Private Demo Considerations
-
-For internal/private demos:
-
-**Network Security:**
-- 🔒 Add IP allowlist
-- 🔒 Use VPN or authentication proxy
-- 🔒 Enable firewall rules
-
-**Configuration:**
-- ⏱️ Shorter reset intervals (15-30 minutes)
-- 🔐 Stronger passwords
-- 📊 Detailed logging
-
-**Example IP allowlist:**
-```typescript
-// src/middleware.ts
-const ALLOWED_IPS = process.env.ALLOWED_IPS?.split(',') || []
-
-export async function middleware(request: Request) {
-  if (process.env.DEMO_MODE === 'true' && ALLOWED_IPS.length > 0) {
-    const ip = request.headers.get('x-forwarded-for')
-    if (!ip || !ALLOWED_IPS.includes(ip)) {
-      return new Response('Forbidden', { status: 403 })
-    }
-  }
-}
-```
 
 ---
 
@@ -683,41 +596,6 @@ docker compose logs -f demo-scheduler
 # Check terminal where scheduler is running
 ```
 
-### Metrics to Track
-
-**Reset Operations:**
-- Reset success/failure rate
-- Average reset duration
-- Time between resets
-- Failed reset attempts
-
-**Usage Metrics:**
-- Number of demo users
-- Feature usage patterns
-- API endpoint calls
-- Popular demo scenarios
-
-**Resource Metrics:**
-- CPU usage during resets
-- Memory consumption
-- Database size
-- Network bandwidth
-
-**Example monitoring setup:**
-```typescript
-// src/lib/metrics.ts
-export async function trackReset(success: boolean, duration: number) {
-  await fetch(process.env.METRICS_ENDPOINT, {
-    method: 'POST',
-    body: JSON.stringify({
-      event: 'demo_reset',
-      success,
-      duration,
-      timestamp: new Date().toISOString(),
-    }),
-  })
-}
-```
 
 ---
 
@@ -766,4 +644,3 @@ curl http://localhost:3000/api/demo-status
 
 ---
 
-**Built with ❤️ for the YASP community**

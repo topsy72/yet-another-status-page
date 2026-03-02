@@ -19,6 +19,7 @@ A modern, self-hosted status page built with [Payload CMS](https://payloadcms.co
 - **Beautiful UI** — Modern, responsive status page with dark mode support
 - **Self-Hosted** — Full control over your data and infrastructure
 - **Docker Ready** — Easy deployment with Docker and Docker Compose
+- **🎯 Live Demo Mode** — Interactive demo environment with automatic resets (see below)
 
 ## Quick Start
 
@@ -35,6 +36,101 @@ Visit:
 
 - **Status Page**: http://localhost:3000
 - **Admin Panel**: http://localhost:3000/admin
+
+## 🎯 Live Demo Mode
+
+This fork includes a **Live Demo Mode** feature that allows users to interact with the admin panel without registration. Perfect for showcasing the platform or providing a sandbox environment.
+
+### Quick Demo Setup
+
+```bash
+# Clone this fork
+git clone https://github.com/topsy72/yet-another-status-page.git
+cd yet-another-status-page
+
+# Start demo environment with automatic resets
+docker-compose -f docker-compose.demo.yml up -d
+```
+
+Visit:
+- **Demo Status Page**: http://localhost:3000
+- **Demo Admin Panel**: http://localhost:3000/admin/login (auto-filled credentials)
+
+### Demo Features
+
+- ✅ **Auto-filled Login** — Credentials pre-populated on login page
+- ✅ **Demo Banner** — Clear indicator with countdown to next reset
+- ✅ **Automatic Resets** — Database resets hourly (configurable)
+- ✅ **Sample Data** — Pre-populated with realistic incidents, services, and maintenance
+- ✅ **Password Protection** — Demo user password cannot be changed
+- ✅ **Login Button** — Public page includes "Login" button in demo mode
+
+### Configuration
+
+Enable demo mode by setting environment variables:
+
+```bash
+DEMO_MODE=true
+DEMO_USER_EMAIL=demo@yasp.io
+DEMO_USER_PASSWORD=demo123
+DEMO_RESET_INTERVAL_MINUTES=60  # Reset every 60 minutes
+```
+
+### Deployment Options
+
+#### Docker (Recommended)
+```bash
+# Start demo environment with scheduler
+docker-compose -f docker-compose.demo.yml up -d
+
+# View logs
+docker-compose -f docker-compose.demo.yml logs -f
+
+# Stop demo environment
+docker-compose -f docker-compose.demo.yml down
+```
+
+**What's included:**
+- Main application server
+- PostgreSQL database with health checks
+- Demo reset scheduler (separate service)
+- Automatic restarts on failure
+- Persistent volumes for uploads
+
+#### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Configure environment (.env file)
+DEMO_MODE=true
+DEMO_USER_EMAIL=demo@yasp.io
+DEMO_USER_PASSWORD=demo123
+DEMO_RESET_INTERVAL_MINUTES=60
+
+# Seed demo data
+npm run demo:seed
+
+# Start development server
+npm run dev
+
+# (Optional) Run scheduler in separate terminal
+npm run demo:scheduler
+```
+
+#### Production Deployment
+
+**Cloud Platforms (Vercel, Railway, Heroku):**
+1. Deploy main application as usual
+2. Set environment variables in platform dashboard
+3. Run `npm run demo:seed` via platform CLI
+4. Set up scheduler as a separate worker/service
+
+**For detailed production deployment options, see [Demo Mode Documentation](docs/DEMO_MODE.md#production-deployment)**
+
+### Documentation
+
+📚 **[Full Demo Mode Documentation](docs/DEMO_MODE.md)** — Comprehensive setup guide, deployment options, troubleshooting, and architecture details
 
 ## Documentation
 
