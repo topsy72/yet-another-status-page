@@ -86,7 +86,7 @@ Enable demo mode by setting environment variables:
 ```bash
 DEMO_MODE=true
 DEMO_USER_EMAIL=demo@yasp.io
-DEMO_USER_PASSWORD=demo123
+DEMO_USER_PASSWORD=demo2026#
 DEMO_RESET_INTERVAL_MINUTES=60  # Reset every 60 minutes
 ```
 
