@@ -65,6 +65,20 @@ Visit:
 - ✅ **Password Protection** — Demo user password cannot be changed
 - ✅ **Login Button** — Public page includes "Login" button in demo mode
 
+### Screenshots
+
+**Demo Start Page with Login Button**
+
+![Demo Start Page](public/demo-images/header-login-button.png)
+
+**Demo Login Page with Auto-filled Credentials**
+
+![Demo Login Page](public/demo-images/demo-banner2.png)
+
+**Demo Banner in Admin Interface**
+
+![Admin Demo Banner](public/demo-images/demo-banner1.png)
+
 ### Configuration
 
 Enable demo mode by setting environment variables:
