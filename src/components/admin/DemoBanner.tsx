@@ -8,7 +8,6 @@ export function DemoBanner() {
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false)
 
   useEffect(() => {
-    // Check if demo mode is enabled
     fetch('/api/demo-status')
       .then((res) => res.json())
       .then((data) => {
@@ -33,10 +32,7 @@ export function DemoBanner() {
         })
     }
 
-    // Update immediately
     updateTimer()
-
-    // Update every second
     const interval = setInterval(updateTimer, 1000)
 
     return () => clearInterval(interval)
