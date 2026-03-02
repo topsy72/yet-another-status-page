@@ -11,7 +11,6 @@
 
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import type { Incident, Maintenance, Subscriber, User } from '@/payload-types'
 
 export async function seedDemoData() {
   console.log('🌱 Starting demo data seed...')
@@ -56,20 +55,16 @@ export async function seedDemoData() {
       })
     } else {
       // Update existing user: reset password and unlock
+      const userId = existingDemoUser.docs[0].id
       await payload.update({
         collection: 'users',
-        id: existingDemoUser.docs[0].id,
+        id: userId,
         data: {
           password: process.env.DEMO_USER_PASSWORD || 'demo123',
+          loginAttempts: 0,
+          lockUntil: null,
         },
       })
-      
-      // Unlock user by resetting login attempts directly in database
-      await payload.db.drizzle.execute(`
-        UPDATE users 
-        SET login_attempts = 0, lock_until = NULL 
-        WHERE email = '${demoEmail}'
-      `)
     }
 
     // Upload logo and favicon

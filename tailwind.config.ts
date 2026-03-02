@@ -53,6 +53,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          hover: "hsl(var(--brand-hover))",
+        },
         status: {
           operational: "hsl(var(--status-operational))",
           degraded: "hsl(var(--status-degraded))",

@@ -38,6 +38,10 @@
 
     --radius: 0.5rem;
 
+    /* Brand colors */
+    --brand: 142 71% 45%;
+    --brand-hover: 142 71% 38%;
+
     /* Status colors */
     --status-operational: 152 69% 40%;
     --status-degraded: 38 92% 50%;
@@ -81,6 +85,10 @@
     --border: 220 15% 20%;
     --input: 220 15% 20%;
     --ring: 220 10% 80%;
+
+    /* Brand colors - same in dark mode */
+    --brand: 142 71% 45%;
+    --brand-hover: 142 71% 38%;
 
     /* Status colors - same in dark mode */
     --status-operational: 152 69% 45%;
