@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isLocalLoginDisabled } from '@/lib/oidc'
+import { isDemoMode, getDemoUserEmail } from '@/lib/demo'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -33,6 +34,29 @@ export const Users: CollectionConfig = {
     create: ({ req: { user } }) => !!user,
     update: ({ req: { user } }) => !!user,
     delete: ({ req: { user } }) => !!user,
+  },
+  hooks: {
+    beforeChange: [
+      ({ data, req, operation }) => {
+        // In demo mode, prevent password changes for the demo user
+        if (isDemoMode() && data?.email === getDemoUserEmail()) {
+          if (data.password && operation === 'update') {
+            delete data.password
+            req.context = req.context || {}
+            req.context.demoPasswordChangeBlocked = true
+          }
+        }
+        return data
+      },
+    ],
+    afterChange: [
+      ({ req }) => {
+        // Show warning message if password change was blocked
+        if (req.context?.demoPasswordChangeBlocked) {
+          console.warn('[Demo Mode] Password change blocked for demo user')
+        }
+      },
+    ],
   },
   fields: [
     {
