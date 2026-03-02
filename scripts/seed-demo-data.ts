@@ -72,6 +72,49 @@ export async function seedDemoData() {
       `)
     }
 
+    // Upload logo and favicon
+    console.log('🎨 Uploading branding assets...')
+    const fs = await import('fs')
+    const path = await import('path')
+    
+    const logoPath = path.join(process.cwd(), 'public', 'yasp-logo.svg')
+    const faviconPath = path.join(process.cwd(), 'public', 'default-favicon.png')
+    
+    let logoMedia = null
+    let faviconMedia = null
+    
+    if (fs.existsSync(logoPath)) {
+      const logoBuffer = fs.readFileSync(logoPath)
+      logoMedia = await payload.create({
+        collection: 'media',
+        data: {
+          alt: 'YASP Logo',
+        },
+        file: {
+          data: logoBuffer,
+          mimetype: 'image/svg+xml',
+          name: 'yasp-logo.svg',
+          size: logoBuffer.length,
+        },
+      })
+    }
+    
+    if (fs.existsSync(faviconPath)) {
+      const faviconBuffer = fs.readFileSync(faviconPath)
+      faviconMedia = await payload.create({
+        collection: 'media',
+        data: {
+          alt: 'YASP Favicon',
+        },
+        file: {
+          data: faviconBuffer,
+          mimetype: 'image/png',
+          name: 'default-favicon.png',
+          size: faviconBuffer.length,
+        },
+      })
+    }
+
     // Update settings
     console.log('⚙️  Updating settings...')
     await payload.updateGlobal({
@@ -80,6 +123,9 @@ export async function seedDemoData() {
         siteName: 'YASP Demo',
         siteDescription: 'Live demo of Yet Another Status Page - Try all features!',
         maintenanceModeEnabled: false,
+        logoLight: logoMedia?.id || undefined,
+        logoDark: logoMedia?.id || undefined,
+        favicon: faviconMedia?.id || undefined,
       },
     })
 
