@@ -7,6 +7,17 @@
  * - Database reset scheduling
  */
 
+import { readFileSync, existsSync } from 'fs'
+import { join } from 'path'
+
+const RESET_TIME_FILE = join(process.cwd(), '.demo-reset-time.json')
+
+interface ResetTimeData {
+  nextResetTime: string
+  intervalMinutes: number
+  lastUpdated: string
+}
+
 export function isDemoMode(): boolean {
   return process.env.DEMO_MODE === 'true'
 }
@@ -23,18 +34,37 @@ export function getDemoResetInterval(): number {
   return parseInt(process.env.DEMO_RESET_INTERVAL_MINUTES || '60', 10)
 }
 
+function getResetTimeData(): ResetTimeData | null {
+  try {
+    if (existsSync(RESET_TIME_FILE)) {
+      const data = readFileSync(RESET_TIME_FILE, 'utf-8')
+      return JSON.parse(data)
+    }
+  } catch (error) {
+    console.error('Failed to read reset time file:', error)
+  }
+  return null
+}
+
 export function getNextResetTime(): Date {
-  const now = new Date()
+  const data = getResetTimeData()
+  
+  if (data?.nextResetTime) {
+    return new Date(data.nextResetTime)
+  }
+  
   const interval = getDemoResetInterval()
-  const nextReset = new Date(now.getTime() + interval * 60 * 1000)
-  return nextReset
+  return new Date(Date.now() + interval * 60 * 1000)
 }
 
 export function getTimeUntilReset(): string {
   const now = new Date()
-  const interval = getDemoResetInterval()
-  const nextReset = new Date(Math.ceil(now.getTime() / (interval * 60 * 1000)) * (interval * 60 * 1000))
+  const nextReset = getNextResetTime()
   const diff = nextReset.getTime() - now.getTime()
+  
+  if (diff <= 0) {
+    return 'Resetting soon...'
+  }
   
   const minutes = Math.floor(diff / 60000)
   const seconds = Math.floor((diff % 60000) / 1000)

@@ -9,15 +9,30 @@
  *   npm run demo:scheduler
  */
 
+import 'dotenv/config'
+import { writeFileSync } from 'fs'
+import { join } from 'path'
 import { seedDemoData } from './seed-demo-data'
 import { getDemoResetInterval } from '../src/lib/demo'
 
-async function resetDemo() {
+const RESET_TIME_FILE = join(process.cwd(), '.demo-reset-time.json')
+
+function saveNextResetTime(intervalMinutes: number) {
+  const nextResetTime = new Date(Date.now() + intervalMinutes * 60 * 1000)
+  writeFileSync(RESET_TIME_FILE, JSON.stringify({
+    nextResetTime: nextResetTime.toISOString(),
+    intervalMinutes,
+    lastUpdated: new Date().toISOString()
+  }))
+}
+
+async function resetDemo(intervalMinutes: number) {
   console.log('🔄 Starting scheduled demo reset...')
   console.log(`⏰ Reset time: ${new Date().toISOString()}`)
   
   try {
     await seedDemoData()
+    saveNextResetTime(intervalMinutes)
     console.log('✅ Demo reset completed successfully!')
   } catch (error) {
     console.error('❌ Demo reset failed:', error)
@@ -33,11 +48,11 @@ async function startScheduler() {
   console.log(`📅 Next reset: ${new Date(Date.now() + intervalMs).toISOString()}`)
   
   // Run initial seed
-  await resetDemo()
+  await resetDemo(intervalMinutes)
   
   // Schedule periodic resets
   setInterval(async () => {
-    await resetDemo()
+    await resetDemo(intervalMinutes)
     console.log(`📅 Next reset: ${new Date(Date.now() + intervalMs).toISOString()}`)
   }, intervalMs)
 }
