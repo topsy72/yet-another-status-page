@@ -27,7 +27,7 @@ export function getDemoUserEmail(): string {
 }
 
 export function getDemoUserPassword(): string {
-  return process.env.DEMO_USER_PASSWORD || 'demo123'
+  return process.env.DEMO_USER_PASSWORD || 'demo2026#'
 }
 
 export function getDemoResetInterval(): number {

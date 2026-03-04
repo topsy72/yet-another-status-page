@@ -33,7 +33,7 @@ Add these lines to `.env`:
 ```bash
 DEMO_MODE=true
 DEMO_USER_EMAIL=demo@yasp.io
-DEMO_USER_PASSWORD=demo123
+DEMO_USER_PASSWORD=demo2026#
 DEMO_RESET_INTERVAL_MINUTES=60
 ```
 
@@ -115,7 +115,7 @@ DEMO_MODE=true
 
 # Demo user credentials (users will use these to login)
 DEMO_USER_EMAIL=demo@yasp.io
-DEMO_USER_PASSWORD=demo123
+DEMO_USER_PASSWORD=demo2026#
 
 # Reset interval in minutes (default: 60)
 DEMO_RESET_INTERVAL_MINUTES=60
@@ -162,7 +162,7 @@ services:
     environment:
       - DEMO_MODE=true
       - DEMO_USER_EMAIL=demo@yasp.io
-      - DEMO_USER_PASSWORD=demo123
+      - DEMO_USER_PASSWORD=demo2026#
       - DEMO_RESET_INTERVAL_MINUTES=60
   
   demo-scheduler:

@@ -119,7 +119,7 @@ npm install
 # Configure environment (.env file)
 DEMO_MODE=true
 DEMO_USER_EMAIL=demo@yasp.io
-DEMO_USER_PASSWORD=demo123
+DEMO_USER_PASSWORD=demo2026#
 DEMO_RESET_INTERVAL_MINUTES=60
 
 # Seed demo data

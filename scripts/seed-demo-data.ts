@@ -49,7 +49,7 @@ export async function seedDemoData() {
         collection: 'users',
         data: {
           email: demoEmail,
-          password: process.env.DEMO_USER_PASSWORD || 'demo123',
+          password: process.env.DEMO_USER_PASSWORD || 'demo2026#',
           role: 'admin',
         },
       })
@@ -60,7 +60,7 @@ export async function seedDemoData() {
         collection: 'users',
         id: userId,
         data: {
-          password: process.env.DEMO_USER_PASSWORD || 'demo123',
+          password: process.env.DEMO_USER_PASSWORD || 'demo2026#',
           loginAttempts: 0,
           lockUntil: null,
         },

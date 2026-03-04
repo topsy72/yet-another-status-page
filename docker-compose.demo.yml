@@ -13,7 +13,7 @@ services:
       # Demo mode configuration
       - DEMO_MODE=true
       - DEMO_USER_EMAIL=${DEMO_USER_EMAIL:-demo@yasp.io}
-      - DEMO_USER_PASSWORD=${DEMO_USER_PASSWORD:-demo123}
+      - DEMO_USER_PASSWORD=${DEMO_USER_PASSWORD:-demo2026#}
       - DEMO_RESET_INTERVAL_MINUTES=${DEMO_RESET_INTERVAL_MINUTES:-60}
     depends_on:
       db:
@@ -33,7 +33,7 @@ services:
       - SERVER_URL=${SERVER_URL:-http://localhost:3000}
       - DEMO_MODE=true
       - DEMO_USER_EMAIL=${DEMO_USER_EMAIL:-demo@yasp.io}
-      - DEMO_USER_PASSWORD=${DEMO_USER_PASSWORD:-demo123}
+      - DEMO_USER_PASSWORD=${DEMO_USER_PASSWORD:-demo2026#}
       - DEMO_RESET_INTERVAL_MINUTES=${DEMO_RESET_INTERVAL_MINUTES:-60}
     depends_on:
       db:
