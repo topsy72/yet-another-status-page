@@ -18,7 +18,7 @@ Try out the admin interface without installation! The demo environment automatic
 
 ```
 Email: demo@yasp.io
-Password: demo123
+Password: demo2026#
 ```
 
 ### Screenshots
@@ -31,7 +31,7 @@ Password: demo123
 
 ![Admin Interface](public/demo-images/demo-banner1.png)
 
-**Public Status Page with Login Button**
+**Checkout the demo using Login button**
 
 ![Public Status Page](public/demo-images/header-login-button.png)
 
