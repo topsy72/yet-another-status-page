@@ -1,11 +1,28 @@
 import type { CollectionConfig } from 'payload'
 import { isLocalLoginDisabled } from '@/lib/oidc'
 import { isDemoMode, getDemoUserEmail } from '@/lib/demo'
+import { getServerUrl } from '@/lib/utils'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
 // Check if password login should be disabled (SSO-only mode)
 const disablePasswordLogin = isLocalLoginDisabled()
+
+// Extract cookie domain from SERVER_URL
+const getCookieDomain = (): string | undefined => {
+  const serverUrl = getServerUrl()
+  try {
+    const url = new URL(serverUrl)
+    // For localhost, return undefined (no domain restriction)
+    if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+      return undefined
+    }
+    // Return the hostname for cookie domain
+    return url.hostname
+  } catch {
+    return undefined
+  }
+}
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -18,6 +35,7 @@ export const Users: CollectionConfig = {
     // Sessions cause issues behind reverse proxy
     useSessions: false,
     cookies: {
+      domain: getCookieDomain(),
       secure: isProduction,
       sameSite: 'Lax',
     },
