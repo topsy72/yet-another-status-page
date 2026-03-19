@@ -69,6 +69,12 @@ if (isVercelBlobEnabled) {
 }
 
 export default buildConfig({
+  onInit: async (payload) => {
+    if (process.env.DEMO_MODE === 'true') {
+      const { initDemoMode } = await import('@/lib/demo')
+      await initDemoMode(payload)
+    }
+  },
   serverURL: getServerUrl(),
   csrf: [
     getServerUrl(),

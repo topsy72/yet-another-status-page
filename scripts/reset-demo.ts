@@ -9,14 +9,18 @@
  * Can be run manually or via cron job
  */
 
-import { seedDemoData } from './seed-demo-data'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { seedDemoData } from '../src/lib/seed-demo-data'
 
 async function resetDemo() {
   console.log('🔄 Starting demo database reset...')
   console.log(`⏰ Reset time: ${new Date().toISOString()}`)
   
+  const payload = await getPayload({ config })
+  
   try {
-    await seedDemoData()
+    await seedDemoData(payload)
     console.log('✅ Demo database reset completed successfully!')
   } catch (error) {
     console.error('❌ Demo database reset failed:', error)
@@ -24,7 +28,6 @@ async function resetDemo() {
   }
 }
 
-// Run the reset
 resetDemo()
   .then(() => {
     console.log('Done!')
@@ -34,3 +37,4 @@ resetDemo()
     console.error('Failed:', error)
     process.exit(1)
   })
+

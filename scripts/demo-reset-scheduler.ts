@@ -10,54 +10,17 @@
  */
 
 import 'dotenv/config'
-import { writeFileSync } from 'fs'
-import { join } from 'path'
-import { seedDemoData } from './seed-demo-data'
-import { getDemoResetInterval } from '../src/lib/demo'
-
-const RESET_TIME_FILE = join(process.cwd(), '.demo-reset-time.json')
-
-function saveNextResetTime(intervalMinutes: number) {
-  const nextResetTime = new Date(Date.now() + intervalMinutes * 60 * 1000)
-  writeFileSync(RESET_TIME_FILE, JSON.stringify({
-    nextResetTime: nextResetTime.toISOString(),
-    intervalMinutes,
-    lastUpdated: new Date().toISOString()
-  }))
-}
-
-async function resetDemo(intervalMinutes: number) {
-  console.log('🔄 Starting scheduled demo reset...')
-  console.log(`⏰ Reset time: ${new Date().toISOString()}`)
-  
-  try {
-    await seedDemoData()
-    saveNextResetTime(intervalMinutes)
-    console.log('✅ Demo reset completed successfully!')
-  } catch (error) {
-    console.error('❌ Demo reset failed:', error)
-  }
-}
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { initDemoMode } from '../src/lib/demo'
 
 async function startScheduler() {
-  const intervalMinutes = getDemoResetInterval()
-  const intervalMs = intervalMinutes * 60 * 1000
+  console.log('🚀 Starting demo reset scheduler...')
   
-  console.log('🚀 Demo reset scheduler started')
-  console.log(`⏱️  Reset interval: ${intervalMinutes} minutes`)
-  console.log(`📅 Next reset: ${new Date(Date.now() + intervalMs).toISOString()}`)
-  
-  // Run initial seed
-  await resetDemo(intervalMinutes)
-  
-  // Schedule periodic resets
-  setInterval(async () => {
-    await resetDemo(intervalMinutes)
-    console.log(`📅 Next reset: ${new Date(Date.now() + intervalMs).toISOString()}`)
-  }, intervalMs)
+  const payload = await getPayload({ config })
+  await initDemoMode(payload)
 }
 
-// Handle graceful shutdown
 process.on('SIGTERM', () => {
   console.log('⏹️  Received SIGTERM, shutting down gracefully...')
   process.exit(0)
@@ -68,8 +31,8 @@ process.on('SIGINT', () => {
   process.exit(0)
 })
 
-// Start the scheduler
 startScheduler().catch((error) => {
   console.error('Failed to start scheduler:', error)
   process.exit(1)
 })
+

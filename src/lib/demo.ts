@@ -7,16 +7,9 @@
  * - Database reset scheduling
  */
 
-import { readFileSync, existsSync } from 'fs'
-import { join } from 'path'
+import type { Payload } from 'payload'
 
-const RESET_TIME_FILE = join(process.cwd(), '.demo-reset-time.json')
-
-interface ResetTimeData {
-  nextResetTime: string
-  intervalMinutes: number
-  lastUpdated: string
-}
+let nextResetTime: Date | null = null
 
 export function isDemoMode(): boolean {
   return process.env.DEMO_MODE === 'true'
@@ -34,23 +27,13 @@ export function getDemoResetInterval(): number {
   return parseInt(process.env.DEMO_RESET_INTERVAL_MINUTES || '60', 10)
 }
 
-function getResetTimeData(): ResetTimeData | null {
-  try {
-    if (existsSync(RESET_TIME_FILE)) {
-      const data = readFileSync(RESET_TIME_FILE, 'utf-8')
-      return JSON.parse(data)
-    }
-  } catch (error) {
-    console.error('Failed to read reset time file:', error)
-  }
-  return null
+export function setNextResetTime(intervalMinutes: number): void {
+  nextResetTime = new Date(Date.now() + intervalMinutes * 60 * 1000)
 }
 
 export function getNextResetTime(): Date {
-  const data = getResetTimeData()
-  
-  if (data?.nextResetTime) {
-    return new Date(data.nextResetTime)
+  if (nextResetTime) {
+    return nextResetTime
   }
   
   const interval = getDemoResetInterval()
@@ -73,4 +56,33 @@ export function getTimeUntilReset(): string {
     return `${minutes}m ${seconds}s`
   }
   return `${seconds}s`
+}
+
+export async function initDemoMode(payload: Payload): Promise<void> {
+  const { seedDemoData } = await import('./seed-demo-data')
+  const intervalMinutes = getDemoResetInterval()
+  const intervalMs = intervalMinutes * 60 * 1000
+  
+  console.log('🚀 Demo mode scheduler initialized')
+  console.log(`⏱️  Reset interval: ${intervalMinutes} minutes`)
+  
+  async function resetDemo() {
+    console.log('🔄 Starting scheduled demo reset...')
+    console.log(`⏰ Reset time: ${new Date().toISOString()}`)
+    
+    try {
+      await seedDemoData(payload)
+      setNextResetTime(intervalMinutes)
+      console.log('✅ Demo reset completed successfully!')
+      console.log(`📅 Next reset: ${getNextResetTime().toISOString()}`)
+    } catch (error) {
+      console.error('❌ Demo reset failed:', error)
+    }
+  }
+  
+  await resetDemo()
+  
+  setInterval(async () => {
+    await resetDemo()
+  }, intervalMs)
 }
