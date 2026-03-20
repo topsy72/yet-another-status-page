@@ -9,7 +9,10 @@
 
 import type { Payload } from 'payload'
 
-let nextResetTime: Date | null = null
+declare global {
+  // eslint-disable-next-line no-var
+  var _demoNextResetTime: Date | undefined
+}
 
 export function isDemoMode(): boolean {
   return process.env.DEMO_MODE === 'true'
@@ -28,14 +31,14 @@ export function getDemoResetInterval(): number {
 }
 
 export function setNextResetTime(intervalMinutes: number): void {
-  nextResetTime = new Date(Date.now() + intervalMinutes * 60 * 1000)
+  global._demoNextResetTime = new Date(Date.now() + intervalMinutes * 60 * 1000)
 }
 
 export function getNextResetTime(): Date {
-  if (nextResetTime) {
-    return nextResetTime
+  if (global._demoNextResetTime) {
+    return global._demoNextResetTime
   }
-  
+
   const interval = getDemoResetInterval()
   return new Date(Date.now() + interval * 60 * 1000)
 }

@@ -55,24 +55,15 @@ export const Users: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      ({ data, req, operation }) => {
+      ({ data, originalDoc, operation }) => {
         // In demo mode, prevent password changes for the demo user
-        if (isDemoMode() && data?.email === getDemoUserEmail()) {
-          if (data.password && operation === 'update') {
-            delete data.password
-            req.context = req.context || {}
-            req.context.demoPasswordChangeBlocked = true
+        if (isDemoMode() && operation === 'update') {
+          const email = data?.email || originalDoc?.email
+          if (email === getDemoUserEmail() && data?.password) {
+            throw new Error('Password changes are disabled in demo mode.')
           }
         }
         return data
-      },
-    ],
-    afterChange: [
-      ({ req }) => {
-        // Show warning message if password change was blocked
-        if (req.context?.demoPasswordChangeBlocked) {
-          console.warn('[Demo Mode] Password change blocked for demo user')
-        }
       },
     ],
   },
