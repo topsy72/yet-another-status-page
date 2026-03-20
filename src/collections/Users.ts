@@ -55,9 +55,11 @@ export const Users: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      ({ data, originalDoc, operation }) => {
+      ({ data, originalDoc, operation, req }) => {
         // In demo mode, prevent password changes for the demo user
-        if (isDemoMode() && operation === 'update') {
+        // Only block when triggered by a logged-in user (admin UI),
+        // not internal server-side calls (e.g. demo seed/reset)
+        if (isDemoMode() && operation === 'update' && req.user) {
           const email = data?.email || originalDoc?.email
           if (email === getDemoUserEmail() && data?.password) {
             throw new Error('Password changes are disabled in demo mode.')
