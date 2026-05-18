@@ -2,6 +2,8 @@
 
 A fully functional live demo system for YASP that allows users to try all features with automatic hourly database resets.
 
+**⚠️ CRITICAL WARNING:** Demo mode is DESTRUCTIVE. It will permanently delete all application data at regular intervals. Only use on a dedicated/disposable database. NEVER enable on production or any database containing data you want to keep.
+
 ## 📋 Table of Contents
 
 - [Quick Start](#quick-start)
@@ -29,6 +31,8 @@ cp .env.example .env
 ```
 
 Add these lines to `.env`:
+
+**⚠️ WARNING:** Only enable demo mode on a disposable database!
 
 ```bash
 DEMO_MODE=true
@@ -69,6 +73,8 @@ npm run demo:scheduler
 ---
 
 ## Overview
+
+**⚠️ IMPORTANT:** Demo mode will delete all data in the database periodically. Use only on dedicated demo infrastructure.
 
 Demo Mode allows you to run a fully functional live demo of YASP where users can:
 

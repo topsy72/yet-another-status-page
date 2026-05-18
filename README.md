@@ -19,7 +19,7 @@ A modern, self-hosted status page built with [Payload CMS](https://payloadcms.co
 - **Beautiful UI** — Modern, responsive status page with dark mode support
 - **Self-Hosted** — Full control over your data and infrastructure
 - **Docker Ready** — Easy deployment with Docker and Docker Compose
-- **🎯 Live Demo Mode** — Interactive demo environment with automatic resets (see below)
+- **Live Demo Mode** — Optional interactive demo environment with automatic resets
 
 ## Quick Start
 
@@ -37,15 +37,17 @@ Visit:
 - **Status Page**: http://localhost:3000
 - **Admin Panel**: http://localhost:3000/admin
 
-## 🎯 Live Demo Mode
+## Live Demo Mode
 
-This fork includes a **Live Demo Mode** feature that allows users to interact with the admin panel without registration. Perfect for showcasing the platform or providing a sandbox environment.
+YASP includes an optional **Live Demo Mode** feature that allows users to interact with the admin panel without registration. Perfect for showcasing the platform or providing a sandbox environment.
+
+**⚠️ WARNING:** Demo mode is DESTRUCTIVE. It will delete and reseed all application data periodically. Only enable on a dedicated/disposable database - NEVER on production data.
 
 ### Quick Demo Setup
 
 ```bash
-# Clone this fork
-git clone https://github.com/topsy72/yet-another-status-page.git
+# Clone the repository
+git clone https://github.com/Hostzero-GmbH/yet-another-status-page.git
 cd yet-another-status-page
 
 # Start demo environment with automatic resets
@@ -80,6 +82,8 @@ Visit:
 ![Admin Demo Banner](public/demo-images/demo-banner1.png)
 
 ### Configuration
+
+**Important:** Demo mode requires a dedicated database. Do not enable on production.
 
 Enable demo mode by setting environment variables:
 

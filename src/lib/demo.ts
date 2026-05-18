@@ -5,13 +5,17 @@
  * - Demo mode detection
  * - Password change restrictions
  * - Database reset scheduling
+ * 
+ * WARNING: Demo mode is destructive and will delete all application data.
+ * Only enable on a dedicated/disposable database.
  */
 
 import type { Payload } from 'payload'
 
 declare global {
-  // eslint-disable-next-line no-var
   var _demoNextResetTime: Date | undefined
+  var _demoSchedulerStarted: boolean | undefined
+  var _demoResetInProgress: Promise<void> | undefined
 }
 
 export function isDemoMode(): boolean {
@@ -27,7 +31,19 @@ export function getDemoUserPassword(): string {
 }
 
 export function getDemoResetInterval(): number {
-  return parseInt(process.env.DEMO_RESET_INTERVAL_MINUTES || '60', 10)
+  const interval = parseInt(process.env.DEMO_RESET_INTERVAL_MINUTES || '60', 10)
+  
+  if (isNaN(interval) || interval <= 0) {
+    console.warn(`⚠️  Invalid DEMO_RESET_INTERVAL_MINUTES: ${process.env.DEMO_RESET_INTERVAL_MINUTES}. Using default: 60 minutes`)
+    return 60
+  }
+  
+  if (interval < 5) {
+    console.warn(`⚠️  DEMO_RESET_INTERVAL_MINUTES too short (${interval}min). Minimum is 5 minutes. Using 5.`)
+    return 5
+  }
+  
+  return interval
 }
 
 export function setNextResetTime(intervalMinutes: number): void {
@@ -62,6 +78,18 @@ export function getTimeUntilReset(): string {
 }
 
 export async function initDemoMode(payload: Payload): Promise<void> {
+  if (global._demoSchedulerStarted) {
+    return
+  }
+
+  global._demoSchedulerStarted = true
+
+  console.warn('⚠️  ========================================')
+  console.warn('⚠️  DEMO MODE ACTIVE')
+  console.warn('⚠️  This will DELETE and RESEED all data!')
+  console.warn('⚠️  Only use on a disposable database.')
+  console.warn('⚠️  ========================================')
+
   const { seedDemoData } = await import('./seed-demo-data')
   const intervalMinutes = getDemoResetInterval()
   const intervalMs = intervalMinutes * 60 * 1000
@@ -70,20 +98,30 @@ export async function initDemoMode(payload: Payload): Promise<void> {
   console.log(`⏱️  Reset interval: ${intervalMinutes} minutes`)
   
   async function resetDemo() {
+    if (global._demoResetInProgress) {
+      return global._demoResetInProgress
+    }
+
     console.log('🔄 Starting scheduled demo reset...')
     console.log(`⏰ Reset time: ${new Date().toISOString()}`)
-    
-    try {
-      await seedDemoData(payload)
-      setNextResetTime(intervalMinutes)
-      console.log('✅ Demo reset completed successfully!')
-      console.log(`📅 Next reset: ${getNextResetTime().toISOString()}`)
-    } catch (error) {
-      console.error('❌ Demo reset failed:', error)
-    }
+
+    global._demoResetInProgress = (async () => {
+      try {
+        await seedDemoData(payload)
+        setNextResetTime(intervalMinutes)
+        console.log('✅ Demo reset completed successfully!')
+        console.log(`📅 Next reset: ${getNextResetTime().toISOString()}`)
+      } catch (error) {
+        console.error('❌ Demo reset failed:', error)
+      } finally {
+        global._demoResetInProgress = undefined
+      }
+    })()
+
+    return global._demoResetInProgress
   }
-  
-  await resetDemo()
+
+  void resetDemo()
   
   setInterval(async () => {
     await resetDemo()

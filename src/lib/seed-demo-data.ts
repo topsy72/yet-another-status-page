@@ -1,16 +1,21 @@
 import type { Payload } from 'payload'
 
 export async function seedDemoData(payload: Payload) {
-  console.log('🌱 Starting demo data seed...')
+  console.log('⚠️  ========================================')
+  console.log('⚠️  DESTRUCTIVE OPERATION: Demo Data Reset')
+  console.log('⚠️  Deleting all existing data...')
+  console.log('⚠️  ========================================')
 
   try {
+    console.log('🗑️  Deleting existing collections...')
+    await payload.delete({ collection: 'notifications', where: {} })
     await payload.delete({ collection: 'incidents', where: {} })
     await payload.delete({ collection: 'maintenances', where: {} })
     await payload.delete({ collection: 'services', where: {} })
     await payload.delete({ collection: 'service-groups', where: {} })
     await payload.delete({ collection: 'subscribers', where: {} })
-    await payload.delete({ collection: 'notifications', where: {} })
     
+    console.log('👥 Resetting users (keeping demo user only)...')
     const demoEmail = process.env.DEMO_USER_EMAIL || 'demo@yasp.io'
     const users = await payload.find({ collection: 'users', limit: 1000 })
     for (const user of users.docs) {
